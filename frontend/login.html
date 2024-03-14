@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Iniciar Sesión</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Tech Management</title>
+    <link rel="stylesheet" href="/frontend/assets/css/login.css">
 </head>
 <body>
-    <h2>Iniciar Sesión</h2>
+  <div class="form-group">
     <form id="loginForm">
-        <label for="nombreUsuario">Nombre de Usuario:</label>
-        <input type="text" id="nombreUsuario" name="nombreUsuario" required><br><br>
-        
-        <label for="contraseña">Contraseña:</label>
-        <input type="password" id="contraseña" name="contraseña" required><br><br>
-        
-        <button type="submit">Iniciar Sesión</button>
-    </form>
+      <h2>Iniciar sesión</h2>
+      <input class="input-field" type="text" placeholder="usuario" name="nombreUsuarioLogin" id="nombreUsuarioLogin"/>
+      <input class="input-field" type="password" placeholder="contraseña" name="contraseñaLogin" id="contraseñaLogin"/>
 
-    <script src="script.js"></script>
+      <button type="submit">Login</button> 
+    </form>
+</div>
+<script src="script.js"></script>
 </body>
 </html>
+
+
