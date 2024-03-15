@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuario</title>
-    <style>
-        /* Estilos CSS aquí (opcional) */
-    </style>
+        <link rel="stylesheet" href="assets/css/registro_usuario.css">
 </head>
 <body>
     <h2>Registro de Usuario</h2>
@@ -14,7 +12,7 @@
         <label for="nombreUsuario">Nombre de Usuario:</label>
         <input type="text" id="nombreUsuario" name="nombreUsuario" required><br><br>
         
-        <label for="contraseña">Contraseña:</label>
+        <label for="contraseña">contraseña:</label>
         <input type="password" id="contraseña" name="contraseña" required><br><br>
         
         <label for="tipoUsuario">Tipo de Usuario:</label>
@@ -43,7 +41,7 @@
     </form>
 
      <!-- Botón adicional para redireccionar al inicio de sesión -->
-     <button onclick="redirectToLogin()">Ir a Iniciar Sesión</button>
+     <button type="button" onclick="redirectToDashboard()">Ir a menú principal</button>
 
     <script>
        document.getElementById('registroUsuarioForm').addEventListener('submit', function(event) {
@@ -104,8 +102,8 @@
 });
 
 
-function redirectToLogin() {
-            window.location.href = '/frontend/login.html'; // Cambia la ruta según tu estructura de archivos
+function redirectToDashboard() {
+            window.location.href = 'dashboard.html'; // Cambia la ruta según tu estructura de archivos
         }
 
     </script>
