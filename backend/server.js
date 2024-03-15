@@ -17,7 +17,7 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 });*/
 // Ruta para servir el archivo HTML de registro de usuario
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', '/prestamos.html'));
+    res.sendFile(path.join(__dirname, '../frontend', '/registro_usuario.html'));
 });
 
 
@@ -60,7 +60,8 @@ app.post('/usuarios', (req, res) => {
     connection.beginTransaction(function(err) {
         if (err) { throw err; }
         
-        connection.query('INSERT INTO Usuario (nombre_usuario, contraseña, tipo_usuario) VALUES (?, ?, ?)', [nombreUsuario, contraseña, tipoUsuario], (error, results) => {
+        //OJO, para el server online es key sensitive. Entonces no se puede con mayúsculas el nombre de las tablas
+        connection.query('INSERT INTO usuario (nombre_usuario, contraseña, tipo_usuario) VALUES (?, ?, ?)', [nombreUsuario, contraseña, tipoUsuario], (error, results) => {
             if (error) {
                 connection.rollback(function() {
                     res.status(500).send('Error interno del servidor');
@@ -68,30 +69,46 @@ app.post('/usuarios', (req, res) => {
                 });
             }
 
-            const id_usuario = results.insertId;
-
-            connection.query('INSERT INTO Empleado_Docente (nombre, identificacion, departamento, cargo, contacto, id_usuario) VALUES (?, ?, ?, ?, ?, ?)', [nombre, identificacion, departamento, cargo, contacto, id_usuario], (error, results) => {
-                if (error) {
+            // Confirmar la transacción para obtener el último ID insertado
+            connection.commit(function(err) {
+                if (err) {
                     connection.rollback(function() {
                         res.status(500).send('Error interno del servidor');
-                        throw error;
+                        throw err;
                     });
                 }
-                
-                connection.commit(function(err) {
-                    if (err) {
+
+                // Consultar el último ID insertado en la tabla Usuario
+                //es necesario agregarlo por la configuración del nuevo server Online
+                connection.query('SELECT LAST_INSERT_ID() AS lastId', (error, results) => {
+                    if (error) {
                         connection.rollback(function() {
                             res.status(500).send('Error interno del servidor');
-                            throw err;
+                            throw error;
                         });
                     }
-                    console.log('Transacción completada.');
-                    res.status(201).send('Usuario y Empleado/Docente creados exitosamente');
+
+                    const id_usuario = results[0].lastId; // Obtener el último ID insertado
+
+                    // Insertar en la tabla Empleado_Docente con el ID de usuario obtenido
+                    connection.query('INSERT INTO empleado_docente (nombre, identificacion, departamento, cargo, contacto, id_usuario) VALUES (?, ?, ?, ?, ?, ?)', [nombre, identificacion, departamento, cargo, contacto, id_usuario], (error, results) => {
+                        if (error) {
+                            connection.rollback(function() {
+                                res.status(500).send('Error interno del servidor');
+                                throw error;
+                            });
+                        }
+                        
+                        console.log('Transacción completada.');
+                        res.status(201).send('Usuario y Empleado/Docente creados exitosamente');
+                    });
                 });
             });
         });
     });
 });
+
+
 
 // Actualizar un usuario existente
 app.put('/usuarios/:id', (req, res) => {
@@ -122,7 +139,7 @@ app.delete('/usuarios/:id', (req, res) => {
 
 // Obtener todos los empleados/docentes
 app.get('/empleados-docentes', (req, res) => {
-    connection.query('SELECT * FROM Empleado_Docente', (error, results) => {
+    connection.query('SELECT * FROM empleado_docente', (error, results) => {
         if (error) {
             res.status(500).send('Error interno del servidor');
             throw error;
@@ -134,7 +151,7 @@ app.get('/empleados-docentes', (req, res) => {
 // Obtener un empleado/docente por su ID
 app.get('/empleados-docentes/:id', (req, res) => {
     const { id } = req.params;
-    connection.query('SELECT * FROM Empleado_Docente WHERE id_empleado_docente = ?', [id], (error, results) => {
+    connection.query('SELECT * FROM empleado_docente WHERE id_empleado_docente = ?', [id], (error, results) => {
         if (error) {
             res.status(500).send('Error interno del servidor');
             throw error;
