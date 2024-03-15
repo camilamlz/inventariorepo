@@ -38,10 +38,11 @@
         <input type="text" id="contacto" name="contacto" required><br><br>
         
         <button type="submit">Registrar Usuario</button>
+             <!-- Botón adicional para redireccionar al inicio de sesión -->
+     <button type="button" onclick="redirectToDashboard()">Ir a menú principal</button>
+
     </form>
 
-     <!-- Botón adicional para redireccionar al inicio de sesión -->
-     <button type="button" onclick="redirectToDashboard()">Ir a menú principal</button>
 
     <script>
        document.getElementById('registroUsuarioForm').addEventListener('submit', function(event) {
