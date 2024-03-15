@@ -12,12 +12,12 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // Ruta para servir el archivo HTML de inicio de sesión
-app.get('/login', (req, res) => {
+/*app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend', '/login.html'));
-});
+});*/
 // Ruta para servir el archivo HTML de registro de usuario
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', '/registro_usuario.html'));
+    res.sendFile(path.join(__dirname, '../frontend', '/prestamos.html'));
 });
 
 
@@ -179,6 +179,65 @@ app.post('/login', (req, res) => {
         res.status(401).send('Credenciales inválidas');
     }
 });
+
+
+// Crear un nuevo préstamo
+app.post('/prestamos', (req, res) => {
+    const { id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega } = req.body;
+
+    // Verificar si algún campo está vacío
+    if (!id_empleado_docente || !id_equipo || !fecha_solicitud || !dirección_entrega) {
+        res.status(400).send('Todos los campos son requeridos');
+        return;
+    }
+
+    // Insertar el préstamo en la base de datos
+    connection.query('INSERT INTO Prestamo (id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, estado) VALUES (?, ?, ?, ?, ?)', [id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, 'pendiente'], (error, results) => {
+        if (error) {
+            res.status(500).send('Error interno del servidor');
+            throw error;
+        }
+        // Registro en la tabla Transacción
+        const id_prestamo = results.insertId;
+        const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const tipo_transaccion = 'entrega';
+        const detalles = 'Solicitud de préstamo';
+        connection.query('INSERT INTO transaccion (id_préstamo, fecha_transaccion, tipo_transaccion, detalles) VALUES (?, ?, ?, ?)', [id_prestamo, fecha_transaccion, tipo_transaccion, detalles], (error, results) => {
+            if (error) {
+                res.status(500).send('Error interno del servidor');
+                throw error;
+            }
+            res.status(201).send('Préstamo creado exitosamente');
+        });
+    });
+});
+
+
+// Aprobar un préstamo
+app.post('/prestamosAprobar', (req, res) => {
+    const { id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega } = req.body;
+
+    // Verificar si algún campo está vacío
+    if (!id_empleado_docente || !id_equipo || !fecha_solicitud || !dirección_entrega) {
+        res.status(400).send('Todos los campos son requeridos');
+        return;
+    }
+
+        // Registro en la tabla Transacción
+        const id_prestamo = results.insertId;
+        const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const tipo_transaccion = 'retiro';
+        const detalles = 'Aprobación de préstamo';
+        connection.query('INSERT INTO transaccion (id_préstamo, fecha_transaccion, tipo_transaccion, detalles) VALUES (?, ?, ?, ?)', [id_prestamo, fecha_transaccion, tipo_transaccion, detalles], (error, results) => {
+            if (error) {
+                res.status(500).send('Error interno del servidor');
+                throw error;
+            }
+            res.status(201).send('Préstamo creado exitosamente');
+        });
+    });
+
+
 
 
 // Configuración del servidor
