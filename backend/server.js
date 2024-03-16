@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 3000;
 const bodyParser = require('body-parser');
 const path = require('path');
 const connection = require('./db');
+const cors = require('cors');
 
 // Middleware para analizar las solicitudes en formato JSON
 app.use(bodyParser.json());
@@ -20,7 +21,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend', '/registro_usuario.html'));
 });
 
-
+app.use(cors());
 
 // Operaciones CRUD para Usuarios
 
@@ -209,7 +210,7 @@ app.post('/prestamos', (req, res) => {
     }
 
     // Insertar el préstamo en la base de datos
-    connection.query('INSERT INTO Prestamo (id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, estado) VALUES (?, ?, ?, ?, ?)', [id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, 'pendiente'], (error, results) => {
+    connection.query('INSERT INTO prestamo (id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, estado) VALUES (?, ?, ?, ?, ?)', [id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, 'pendiente'], (error, results) => {
         if (error) {
             res.status(500).send('Error interno del servidor');
             throw error;

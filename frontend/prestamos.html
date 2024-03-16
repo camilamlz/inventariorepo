@@ -71,7 +71,7 @@
             console.log('Datos del préstamo a enviar:', prestamoData);
 
             // Enviar los datos al backend
-            fetch('/prestamos', {
+            fetch('http://127.0.0.1:3000/prestamos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
