@@ -19,7 +19,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     };
 
     // Enviar los datos al backend para autenticación
-    fetch('http://techmanagement.azurewebsites.net:3000/login', {
+    fetch('http://techmanagement.scm.azurewebsites.net:3000/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'

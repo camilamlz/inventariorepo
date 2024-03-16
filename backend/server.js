@@ -13,9 +13,9 @@ app.use(bodyParser.json());
 // app.use(express.static(path.join(__dirname, 'dist')));
 
 // // // Ruta para servir el archivo HTML de inicio de sesión
-// // app.get('/login', (req, res) => {
-// //     res.sendFile(path.join(__dirname, 'dist', 'login.html'));
-// // });
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'login.html'));
+});
 // // // Ruta para servir el archivo HTML de registro de usuario
 // // app.get('/', (req, res) => {
 // //     res.sendFile(path.join(__dirname, 'dist', 'registro_usuario.html'));
