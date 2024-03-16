@@ -39,6 +39,8 @@
         <input type="number" id="aprobadoPor" name="aprobadoPor" required><br><br>
         
         <button type="submit">Registrar Préstamo</button>
+           <!-- Botón adicional para redireccionar al inicio de sesión -->
+     <button type="button" onclick="redirectToDashboard()">Ir a menú principal</button>
     </form>
 
     <script>
@@ -82,7 +84,7 @@
                 if (response.ok) {
                     alert('Préstamo registrado exitosamente');
                     // Redireccionar a otra página si es necesario
-                    window.location.href = '/otra-pagina.html';
+                    window.location.href = 'prestamos.html';
                 } else {
                     throw new Error('Error al registrar préstamo');
                 }
@@ -92,6 +94,10 @@
                 alert('Ocurrió un error al registrar préstamo');
             });
         });
+
+        function redirectToDashboard() {
+            window.location.href = 'dashboard.html'; // Cambia la ruta según tu estructura de archivos
+        }
     </script>
 </body>
 </html>

@@ -80,7 +80,7 @@
     console.log('Datos del usuario a enviar:', usuarioData);
 
     // Enviar los datos al backend
-    fetch('/usuarios', {
+    fetch('http://127.0.0.1:3000/usuarios', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -91,7 +91,7 @@
         if (response.ok) {
             alert('Usuario registrado exitosamente');
             // Redireccionar a otra página si es necesario
-            window.location.href = '/frontend/login.html';
+            window.location.href = 'registro_usuario.html';
         } else {
             throw new Error('Error al registrar usuario');
         }
