@@ -70,8 +70,8 @@ button[type="submit"] {
   margin: 40px auto;
   border: 1px solid white;
   display: block;
-  width: 200px;
-  font-size: 50px;
+  width: 100px;
+  font-size: 30px;
   
 }
 
@@ -79,4 +79,5 @@ button[type="submit"]:hover{
   border: 1px solid white;
   display: bl;
   width: 100px;
+  transform: scale(1.05);
 }
