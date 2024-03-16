@@ -189,13 +189,24 @@ app.delete('/empleados-docentes/:id', (req, res) => {
 //Realizar Login
 app.post('/login', (req, res) => {
     const { nombreUsuario, contraseña } = req.body;
-    // Realizar la autenticación en la base de datos aquí
-    // Por simplicidad, aquí solo se mostrará un mensaje de éxito si las credenciales son correctas
-    if (nombreUsuario === 'usuario' && contraseña === 'contraseña') {
+    
+    // Realiza la búsqueda del usuario en la base de datos
+    connection.query('SELECT * FROM usuario WHERE nombre_usuario = ? AND contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
+        if (error) {
+            console.error('Error al buscar usuario:', error);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+        
+        // Si no se encuentra ningún usuario, devuelve un error de credenciales inválidas
+        if (results.length === 0) {
+            res.status(401).send('Credenciales inválidas');
+            return;
+        }
+
+        // Si se encuentra el usuario, envía una respuesta exitosa
         res.status(200).send('Inicio de sesión exitoso');
-    } else {
-        res.status(401).send('Credenciales inválidas');
-    }
+    });
 });
 
 
@@ -255,6 +266,21 @@ app.post('/prestamosAprobar', (req, res) => {
         });
     });
 
+
+    // Ruta para obtener todos los equipos
+app.get('/equipos', (req, res) => {
+    // Realizar una consulta a la base de datos para obtener todos los equipos
+    const query = 'SELECT id_equipo, nombre_equipo FROM equipo_tecnologico';
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Error al obtener equipos:', error);
+            res.status(500).json({ error: 'Ocurrió un error al obtener los equipos' });
+        } else {
+            // Enviar los resultados como respuesta
+            res.json(results);
+        }
+    });
+});
 
 
 

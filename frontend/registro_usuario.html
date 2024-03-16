@@ -39,7 +39,7 @@
         
         <button type="submit">Registrar Usuario</button>
              <!-- Botón adicional para redireccionar al inicio de sesión -->
-     <button type="button" onclick="redirectToDashboard()">Ir a menú principal</button>
+     <button type="button" onclick="redirectToLogin()">Ir a Login</button>
 
     </form>
 
@@ -103,8 +103,12 @@
 });
 
 
-function redirectToDashboard() {
+/* function redirectToDashboard() {
             window.location.href = 'dashboard.html'; // Cambia la ruta según tu estructura de archivos
+        } */
+
+        function redirectToLogin() {
+            window.location.href = 'Login.html'; // Cambia la ruta según tu estructura de archivos
         }
 
     </script>

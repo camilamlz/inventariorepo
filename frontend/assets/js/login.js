@@ -39,3 +39,4 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         alert('Inicio de sesión fallido. Verifica tus credenciales e intenta nuevamente.');
     });
 });
+
