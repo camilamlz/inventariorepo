@@ -1,19 +1,24 @@
+// Inicio de sesión
 document.getElementById('loginForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault(); // Evitar que el formulario se envíe por defecto
 
+    // Obtener los valores de nombre de usuario y contraseña
     const nombreUsuario = document.getElementById('nombreUsuarioLogin').value;
     const contraseña = document.getElementById('contraseñaLogin').value;
 
+    // Verificar si algún campo está vacío
     if (!nombreUsuario || !contraseña) {
         alert('Nombre de usuario y contraseña son requeridos');
-        return;
+        return; // Detener el envío de datos al servidor
     }
 
+    // Crear un objeto con los datos de inicio de sesión
     const loginData = {
         nombreUsuario: nombreUsuario,
         contraseña: contraseña
     };
 
+    // Enviar los datos al backend para autenticación
     fetch('/login', {
         method: 'POST',
         headers: {
@@ -24,7 +29,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     .then(response => {
         if (response.ok) {
             alert('Inicio de sesión exitoso');
-            window.location.href = '/dashboard.html';
+            window.location.href = '/dashboard.html'; // Redireccionar al dashboard después del inicio de sesión
         } else {
             throw new Error('Credenciales inválidas');
         }
