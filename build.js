@@ -7,10 +7,10 @@ function copyFiles(sourceDir, targetDir) {
         const sourceFile = path.join(sourceDir, file);
         const targetFile = path.join(targetDir, file);
         if (fs.lstatSync(sourceFile).isDirectory()) {
-            fs.mkdirSync(targetFile);
+            fs.mkdirSync(targetFile, { recursive: true });
             copyFiles(sourceFile, targetFile);
         } else {
-            fs.copyFileSync(sourceFile, targetFile);
+            fs.copyFileSync(sourceFile, targetFile, fs.constants.COPYFILE_REPLACE);
         }
     });
 }
