@@ -10,15 +10,15 @@ const cors = require('cors');
 app.use(bodyParser.json());
 
 // Servir archivos estáticos desde la carpeta "public"
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Ruta para servir el archivo HTML de inicio de sesión
-/*app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', '/login.html'));
-});*/
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dist', 'login.html'));
+});
 // Ruta para servir el archivo HTML de registro de usuario
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', '/registro_usuario.html'));
+    res.sendFile(path.join(__dirname, 'dist', 'registro_usuario.html'));
 });
 
 app.use(cors());

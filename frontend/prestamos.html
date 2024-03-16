@@ -74,7 +74,7 @@ function obtenerFechaActual() {
             const selectEmpleadoDocente = document.getElementById('idEmpleadoDocente');
 
             // Realizar una solicitud al backend para obtener los nombres de usuario y IDs de empleado/docente
-            fetch('http://127.0.0.1:3000/empleados-docentes')
+            fetch('http://techmanagement.azurewebsites.net:3000/empleados-docentes')
                 .then(response => response.json())
                 .then(data => {
                     // Iterar sobre los datos recibidos y crear las opciones para la lista desplegable
@@ -101,7 +101,7 @@ function obtenerFechaActual() {
     const selectEquipo = document.getElementById('idEquipo');
 
     // Realizar una solicitud al backend para obtener los IDs de equipo
-    fetch('http://127.0.0.1:3000/equipos')
+    fetch('http://techmanagement.azurewebsites.net:3000/equipos')
         .then(response => response.json())
         .then(data => {
             // Iterar sobre los datos recibidos y crear las opciones para la lista desplegable
@@ -156,7 +156,7 @@ function obtenerFechaActual() {
             console.log('Datos del préstamo a enviar:', prestamoData);
 
             // Enviar los datos al backend
-            fetch('http://127.0.0.1:3000/prestamos', {
+            fetch('http://techmanagement.azurewebsites.net:3000/prestamos', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
