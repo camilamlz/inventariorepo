@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenido a Tech Management</title>
+<link rel="stylesheet" href="assets/css/formularios.css">
+</head>
+<body>
+<div class="container">
+  <div class="title">Bienvenido a Tech Management</div>
+  <div class="box" onclick="redirectTo('registro_usuario.html')">
+    <div class="box-title">Registrar usuario</div>
+  </div>
+  <div class="box" onclick="redirectTo('prestamos.html')">
+    <div class="box-title">Registrar préstamo</div>
+  </div>
+  <div class="box" onclick="redirectTo('draft.html')">
+    <div class="box-title">Draft</div>
+  </div>
+</div>
+<script>
+  function redirectTo(page) {
+    window.location.href = page;
+  }
+</script>
+</body>
+</html>

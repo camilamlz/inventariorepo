@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Usuario</title>
-    <style>
-        /* Estilos CSS aquí (opcional) */
-    </style>
+        <link rel="stylesheet" href="assets/css/formularios.css">
 </head>
 <body>
     <h2>Registro de Usuario</h2>
@@ -14,7 +12,7 @@
         <label for="nombreUsuario">Nombre de Usuario:</label>
         <input type="text" id="nombreUsuario" name="nombreUsuario" required><br><br>
         
-        <label for="contraseña">Contraseña:</label>
+        <label for="contraseña">contraseña:</label>
         <input type="password" id="contraseña" name="contraseña" required><br><br>
         
         <label for="tipoUsuario">Tipo de Usuario:</label>
@@ -40,10 +38,11 @@
         <input type="text" id="contacto" name="contacto" required><br><br>
         
         <button type="submit">Registrar Usuario</button>
+             <!-- Botón adicional para redireccionar al inicio de sesión -->
+     <button type="button" onclick="redirectToDashboard()">Ir a menú principal</button>
+
     </form>
 
-     <!-- Botón adicional para redireccionar al inicio de sesión -->
-     <button onclick="redirectToLogin()">Ir a Iniciar Sesión</button>
 
     <script>
        document.getElementById('registroUsuarioForm').addEventListener('submit', function(event) {
@@ -81,7 +80,7 @@
     console.log('Datos del usuario a enviar:', usuarioData);
 
     // Enviar los datos al backend
-    fetch('/usuarios', {
+    fetch('http://127.0.0.1:3000/usuarios', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -92,7 +91,7 @@
         if (response.ok) {
             alert('Usuario registrado exitosamente');
             // Redireccionar a otra página si es necesario
-            window.location.href = '/frontend/login.html';
+            window.location.href = 'registro_usuario.html';
         } else {
             throw new Error('Error al registrar usuario');
         }
@@ -104,8 +103,8 @@
 });
 
 
-function redirectToLogin() {
-            window.location.href = '/frontend/login.html'; // Cambia la ruta según tu estructura de archivos
+function redirectToDashboard() {
+            window.location.href = 'dashboard.html'; // Cambia la ruta según tu estructura de archivos
         }
 
     </script>
