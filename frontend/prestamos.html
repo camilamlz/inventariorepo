@@ -10,7 +10,7 @@
     <h2>Registro de Préstamo</h2>
     <form id="registroPrestamoForm">
         <label for="idEmpleadoDocente">Empleado/Docente:</label>
-        <select id="idEmpleadoDocente" name="idEmpleadoDocente" required>
+        <input type="text" id="idEmpleadoDocente" name="idEmpleadoDocente" readonly><br><br>
             <!-- Opciones serán agregadas aquí dinámicamente -->
         </select><br><br>
         
@@ -50,8 +50,21 @@
 
     <script>
 
+
+
+
+
+
 // Función para obtener la fecha actual en el formato YYYY-MM-DD
 function obtenerFechaActual() {
+            const fechaActual = new Date();
+            const year = fechaActual.getFullYear();
+            const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+            const day = fechaActual.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function obtenerSession() {
             const fechaActual = new Date();
             const year = fechaActual.getFullYear();
             const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
@@ -65,10 +78,18 @@ function obtenerFechaActual() {
 
 
 
+            document.addEventListener('DOMContentLoaded', function() {
+            // Recuperar el ID de usuario almacenado en sessionStorage
+            const userId = sessionStorage.getItem('userId');
+            const userName = sessionStorage.getItem('userName');
+            // Asignar el ID de usuario al campo correspondiente del formulario
+            document.getElementById('idEmpleadoDocente').value = userName;
+            console.log('userId:', userId);
+console.log('userName:', userName);
+        });
 
 
-
-
+/* 
         document.addEventListener('DOMContentLoaded', function() {
             // Obtener la lista desplegable por su ID
             const selectEmpleadoDocente = document.getElementById('idEmpleadoDocente');
@@ -93,7 +114,7 @@ function obtenerFechaActual() {
                     console.error('Error al obtener empleados/docentes:', error);
                     alert('Ocurrió un error al cargar los empleados/docentes');
                 });
-        });
+        }); */
 
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -130,8 +151,9 @@ function obtenerFechaActual() {
         document.getElementById('registroPrestamoForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Evitar que el formulario se envíe por defecto
 
+            const userId = sessionStorage.getItem('userId');
             // Obtener los valores de cada campo del formulario
-            const idEmpleadoDocente = document.getElementById('idEmpleadoDocente').value;
+            const idEmpleadoDocente = userId;
             const idEquipo = document.getElementById('idEquipo').value;
             const fechaSolicitud = document.getElementById('fechaSolicitud').value;
          /*    const fechaEntrega = document.getElementById('fechaEntrega').value; */
@@ -167,7 +189,7 @@ function obtenerFechaActual() {
                 if (response.ok) {
                     alert('Préstamo registrado exitosamente');
                     // Redireccionar a otra página si es necesario
-                    window.location.href = 'prestamos.html';
+                    window.location.href = 'dashboard.html';
                 } else {
                     throw new Error('Error al registrar préstamo');
                 }

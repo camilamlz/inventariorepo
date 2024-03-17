@@ -191,7 +191,7 @@ app.post('/login', (req, res) => {
     const { nombreUsuario, contraseña } = req.body;
     
     // Realiza la búsqueda del usuario en la base de datos
-    connection.query('SELECT * FROM usuario WHERE nombre_usuario = ? AND contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
+    connection.query('SELECT id_usuario,nombre_usuario FROM usuario WHERE nombre_usuario = ? AND contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
         if (error) {
             console.error('Error al buscar usuario:', error);
             res.status(500).send('Error interno del servidor');
@@ -204,8 +204,10 @@ app.post('/login', (req, res) => {
             return;
         }
 
-        // Si se encuentra el usuario, envía una respuesta exitosa
-        res.status(200).send('Inicio de sesión exitoso');
+        // Si se encuentra el usuario, envía el ID de usuario como respuesta
+        const userId = results[0].id_usuario;
+        const userName = results[0].nombre_usuario
+        res.status(200).json({ userId: userId, userName: userName });
     });
 });
 
