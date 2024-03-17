@@ -152,12 +152,13 @@ app.get('/empleados-docentes', (req, res) => {
 // Obtener un empleado/docente por su ID
 app.get('/empleados-docentes/:id', (req, res) => {
     const { id } = req.params;
-    connection.query('SELECT * FROM empleado_docente WHERE id_empleado_docente = ?', [id], (error, results) => {
+    connection.query('SELECT id_empleado_docente FROM empleado_docente WHERE id_usuario = ?', [id], (error, results) => {
         if (error) {
             res.status(500).send('Error interno del servidor');
             throw error;
         }
         res.json(results[0]);
+        console.log('res:', res);
     });
 });
 
@@ -191,7 +192,7 @@ app.post('/login', (req, res) => {
     const { nombreUsuario, contraseña } = req.body;
     
     // Realiza la búsqueda del usuario en la base de datos
-    connection.query('SELECT id_usuario,nombre_usuario FROM usuario WHERE nombre_usuario = ? AND contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
+    connection.query('SELECT u.nombre_usuario, ed.id_empleado_docente FROM usuario u JOIN empleado_docente ed ON u.id_usuario = ed.id_usuario WHERE u.nombre_usuario = ? AND u.contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
         if (error) {
             console.error('Error al buscar usuario:', error);
             res.status(500).send('Error interno del servidor');
@@ -205,7 +206,7 @@ app.post('/login', (req, res) => {
         }
 
         // Si se encuentra el usuario, envía el ID de usuario como respuesta
-        const userId = results[0].id_usuario;
+        const userId = results[0].id_empleado_docente;
         const userName = results[0].nombre_usuario
         res.status(200).json({ userId: userId, userName: userName });
     });
