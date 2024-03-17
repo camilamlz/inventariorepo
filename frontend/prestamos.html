@@ -9,34 +9,39 @@
 <body>
     <h2>Registro de Préstamo</h2>
     <form id="registroPrestamoForm">
-        <label for="idEmpleadoDocente">ID Empleado/Docente:</label>
-        <input type="number" id="idEmpleadoDocente" name="idEmpleadoDocente" required><br><br>
+        <label for="idEmpleadoDocente">Empleado/Docente:</label>
+        <input type="text" id="idEmpleadoDocente" name="idEmpleadoDocente" readonly><br><br>
+            <!-- Opciones serán agregadas aquí dinámicamente -->
+        </select><br><br>
         
         <label for="idEquipo">ID Equipo:</label>
-        <input type="number" id="idEquipo" name="idEquipo" required><br><br>
+        <select id="idEquipo" name="idEquipo" required>
+            <!-- Opciones serán agregadas aquí dinámicamente -->
+        </select><br><br>
         
         <label for="fechaSolicitud">Fecha de Solicitud:</label>
         <input type="date" id="fechaSolicitud" name="fechaSolicitud" required><br><br>
         
-        <label for="fechaEntrega">Fecha de Entrega:</label>
-        <input type="date" id="fechaEntrega" name="fechaEntrega"><br><br>
+      <!--<label for="fechaEntrega">Fecha de Entrega:</label>
+        <input type="date" id="fechaEntrega" name="fechaEntrega"><br><br> -->  
         
-        <label for="fechaRetiro">Fecha de Retiro:</label>
-        <input type="date" id="fechaRetiro" name="fechaRetiro"><br><br>
+        <!--  <label for="fechaRetiro">Fecha de Retiro:</label>
+        <input type="date" id="fechaRetiro" name="fechaRetiro"><br><br>-->
+       
         
         <label for="direccionEntrega">Dirección de Entrega:</label>
         <input type="text" id="direccionEntrega" name="direccionEntrega" required><br><br>
         
-        <label for="estado">Estado:</label>
+ <!--        <label for="estado">Estado:</label>
         <select id="estado" name="estado" required>
             <option value="pendiente">Pendiente</option>
             <option value="aprobado">Aprobado</option>
             <option value="rechazado">Rechazado</option>
             <option value="finalizado">Finalizado</option>
         </select><br><br>
-        
-        <label for="aprobadoPor">Aprobado Por:</label>
-        <input type="number" id="aprobadoPor" name="aprobadoPor" required><br><br>
+         -->
+    <!--     <label for="aprobadoPor">Aprobado Por:</label>
+        <input type="number" id="aprobadoPor" name="aprobadoPor" required><br><br> -->
         
         <button type="submit">Registrar Préstamo</button>
            <!-- Botón adicional para redireccionar al inicio de sesión -->
@@ -44,29 +49,129 @@
     </form>
 
     <script>
+
+
+
+
+
+
+// Función para obtener la fecha actual en el formato YYYY-MM-DD
+function obtenerFechaActual() {
+            const fechaActual = new Date();
+            const year = fechaActual.getFullYear();
+            const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+            const day = fechaActual.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function obtenerSession() {
+            const fechaActual = new Date();
+            const year = fechaActual.getFullYear();
+            const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+            const day = fechaActual.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer la fecha actual por defecto en el campo fechaSolicitud
+            document.getElementById('fechaSolicitud').value = obtenerFechaActual();});
+
+
+
+            document.addEventListener('DOMContentLoaded', function() {
+            // Recuperar el ID de usuario almacenado en sessionStorage
+            const userId = sessionStorage.getItem('userId');
+            const userName = sessionStorage.getItem('userName');
+            // Asignar el ID de usuario al campo correspondiente del formulario
+            document.getElementById('idEmpleadoDocente').value = userName;
+            console.log('userId:', userId);
+console.log('userName:', userName);
+        });
+
+
+/* 
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obtener la lista desplegable por su ID
+            const selectEmpleadoDocente = document.getElementById('idEmpleadoDocente');
+
+            // Realizar una solicitud al backend para obtener los nombres de usuario y IDs de empleado/docente
+            fetch('http://127.0.0.1:3000/empleados-docentes')
+                .then(response => response.json())
+                .then(data => {
+                    // Iterar sobre los datos recibidos y crear las opciones para la lista desplegable
+                    data.forEach(empleado => {
+                        // Crear un elemento de opción
+                        const option = document.createElement('option');
+                        // Establecer el valor del atributo 'value' como el ID del empleado/docente
+                        option.value = empleado.id_empleado_docente;
+                        // Establecer el texto de la opción como el nombre del usuario
+                        option.textContent = empleado.nombre;
+                        // Agregar la opción al select
+                        selectEmpleadoDocente.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al obtener empleados/docentes:', error);
+                    alert('Ocurrió un error al cargar los empleados/docentes');
+                });
+        }); */
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+    // Obtener la lista desplegable por su ID
+    const selectEquipo = document.getElementById('idEquipo');
+
+    // Realizar una solicitud al backend para obtener los IDs de equipo
+    fetch('http://127.0.0.1:3000/equipos')
+        .then(response => response.json())
+        .then(data => {
+            // Iterar sobre los datos recibidos y crear las opciones para la lista desplegable
+            data.forEach(equipo => {
+                // Crear un elemento de opción
+                const option = document.createElement('option');
+                // Establecer el valor del atributo 'value' como el ID del equipo
+                option.value = equipo.id_equipo;
+                // Establecer el texto de la opción como el nombre del equipo
+                option.textContent = equipo.nombre_equipo;
+                // Agregar la opción al select
+                selectEquipo.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error al obtener equipos:', error);
+            alert('Ocurrió un error al cargar los equipos');
+        });
+});
+
+
+
+
+
+
         document.getElementById('registroPrestamoForm').addEventListener('submit', function(event) {
             event.preventDefault(); // Evitar que el formulario se envíe por defecto
 
+            const userId = sessionStorage.getItem('userId');
             // Obtener los valores de cada campo del formulario
-            const idEmpleadoDocente = document.getElementById('idEmpleadoDocente').value;
+            const idEmpleadoDocente = userId;
             const idEquipo = document.getElementById('idEquipo').value;
             const fechaSolicitud = document.getElementById('fechaSolicitud').value;
-            const fechaEntrega = document.getElementById('fechaEntrega').value;
-            const fechaRetiro = document.getElementById('fechaRetiro').value;
+         /*    const fechaEntrega = document.getElementById('fechaEntrega').value; */
+          /*   const fechaRetiro = document.getElementById('fechaRetiro').value; */
             const direccionEntrega = document.getElementById('direccionEntrega').value;
-            const estado = document.getElementById('estado').value;
-            const aprobadoPor = document.getElementById('aprobadoPor').value;
+          /*   const estado = document.getElementById('estado').value; */
+          /*   const aprobadoPor = document.getElementById('aprobadoPor').value; */
 
             // Crear un objeto con los datos del préstamo
             const prestamoData = {
                 id_empleado_docente: idEmpleadoDocente,
                 id_equipo: idEquipo,
                 fecha_solicitud: fechaSolicitud,
-                fecha_entrega: fechaEntrega,
-                fecha_retiro: fechaRetiro,
+               /*  fecha_entrega: fechaEntrega, */
+               /*  fecha_retiro: fechaRetiro, */
                 dirección_entrega: direccionEntrega,
-                estado: estado,
-                aprobado_por: aprobadoPor
+                estado: "pendiente",
+              /*   aprobado_por: aprobadoPor */
             };
 
             // Mostrar los datos del formulario en la consola del navegador
@@ -84,7 +189,7 @@
                 if (response.ok) {
                     alert('Préstamo registrado exitosamente');
                     // Redireccionar a otra página si es necesario
-                    window.location.href = 'prestamos.html';
+                    window.location.href = 'dashboard.html';
                 } else {
                     throw new Error('Error al registrar préstamo');
                 }

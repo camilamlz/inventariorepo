@@ -152,12 +152,13 @@ app.get('/empleados-docentes', (req, res) => {
 // Obtener un empleado/docente por su ID
 app.get('/empleados-docentes/:id', (req, res) => {
     const { id } = req.params;
-    connection.query('SELECT * FROM empleado_docente WHERE id_empleado_docente = ?', [id], (error, results) => {
+    connection.query('SELECT id_empleado_docente FROM empleado_docente WHERE id_usuario = ?', [id], (error, results) => {
         if (error) {
             res.status(500).send('Error interno del servidor');
             throw error;
         }
         res.json(results[0]);
+        console.log('res:', res);
     });
 });
 
@@ -189,13 +190,26 @@ app.delete('/empleados-docentes/:id', (req, res) => {
 //Realizar Login
 app.post('/login', (req, res) => {
     const { nombreUsuario, contraseña } = req.body;
-    // Realizar la autenticación en la base de datos aquí
-    // Por simplicidad, aquí solo se mostrará un mensaje de éxito si las credenciales son correctas
-    if (nombreUsuario === 'usuario' && contraseña === 'contraseña') {
-        res.status(200).send('Inicio de sesión exitoso');
-    } else {
-        res.status(401).send('Credenciales inválidas');
-    }
+    
+    // Realiza la búsqueda del usuario en la base de datos
+    connection.query('SELECT u.nombre_usuario, ed.id_empleado_docente FROM usuario u JOIN empleado_docente ed ON u.id_usuario = ed.id_usuario WHERE u.nombre_usuario = ? AND u.contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
+        if (error) {
+            console.error('Error al buscar usuario:', error);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+        
+        // Si no se encuentra ningún usuario, devuelve un error de credenciales inválidas
+        if (results.length === 0) {
+            res.status(401).send('Credenciales inválidas');
+            return;
+        }
+
+        // Si se encuentra el usuario, envía el ID de usuario como respuesta
+        const userId = results[0].id_empleado_docente;
+        const userName = results[0].nombre_usuario
+        res.status(200).json({ userId: userId, userName: userName });
+    });
 });
 
 
@@ -255,6 +269,21 @@ app.post('/prestamosAprobar', (req, res) => {
         });
     });
 
+
+    // Ruta para obtener todos los equipos
+app.get('/equipos', (req, res) => {
+    // Realizar una consulta a la base de datos para obtener todos los equipos
+    const query = 'SELECT id_equipo, nombre_equipo FROM equipo_tecnologico';
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Error al obtener equipos:', error);
+            res.status(500).json({ error: 'Ocurrió un error al obtener los equipos' });
+        } else {
+            // Enviar los resultados como respuesta
+            res.json(results);
+        }
+    });
+});
 
 
 

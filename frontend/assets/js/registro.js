@@ -42,7 +42,7 @@ document.getElementById('registroUsuarioForm').addEventListener('submit', functi
         if (response.ok) {
             alert('Usuario registrado exitosamente');
             // Redireccionar a otra página si es necesario
-            window.location.href = '/otra-pagina.html';
+            window.location.href = '/login.html';
         } else {
             throw new Error('Error al registrar usuario');
         }
