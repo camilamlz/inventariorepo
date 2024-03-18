@@ -27,7 +27,7 @@ app.use(cors());
 
 // Obtener todos los usuarios
 app.get('/usuarios', (req, res) => {
-    connection.query('SELECT * FROM Usuario', (error, results) => {
+    connection.query('SELECT * FROM usuario', (error, results) => {
         if (error) {
             res.status(500).send('Error interno del servidor');
             throw error;
