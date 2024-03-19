@@ -20,7 +20,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
     };
 
     // Enviar los datos al backend para autenticación
-    fetch('bdfqojyf0cukhwtj2lrp-mysql.services.clever-cloud.com:3306/login', {
+    fetch('/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
