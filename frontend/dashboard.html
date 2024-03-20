@@ -15,6 +15,9 @@
   <div class="box" onclick="redirectTo('prestamos.html')">
     <div class="box-title">Registrar préstamo</div>
   </div>
+  <div class="box" onclick="redirectTo('prestamos_pendientes.html')">
+    <div class="box-title">Aprobar préstamo</div>
+  </div>
 <!--   <div class="box" onclick="redirectTo('draft.html')">
     <div class="box-title">Draft</div> -->
   </div>
@@ -23,6 +26,33 @@
   function redirectTo(page) {
     window.location.href = page;
   }
+
+
+  document.addEventListener('DOMContentLoaded', function() {
+            // Recuperar el ID de usuario almacenado en sessionStorage
+            const userType = sessionStorage.getItem('userType');
+            const userId = sessionStorage.getItem('userId');
+
+            console.log('userType:', userType);
+            console.log('userId:', userId);
+            if (userType == "administrador"){
+              alert('Bienvenido Admin');
+             
+            }else{
+              alert('Será redireccionado, página autorizada sólo a Admin');
+              window.location.href="/prestamos.html";
+            }
+      
+
+
+
+
+        });
+
+
+
+
+
 </script>
 </body>
 </html>

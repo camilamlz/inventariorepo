@@ -68,21 +68,26 @@
         function aprobarPrestamo(idPrestamo) {
             const fechaEntrega = document.getElementById(`fechaEntrega_${idPrestamo}`).value;
             // Realizar una petición para aprobar el préstamo con el ID correspondiente
+            const userId = sessionStorage.getItem('userId');
+           
             fetch('/prestamo_aprobar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ 
-                    id_empleado_docente: 1, // Cambiar por el valor adecuado
+                    id_empleado_docente: userId, // Cambiar por el valor adecuado
                     estado: 'aprobado', 
                     fecha_entrega: fechaEntrega, 
                     id_prestamo: idPrestamo 
                 })
+                
             })
             .then(response => response.json())
             .then(data => {
-                alert(data.message); // Mostrar mensaje de éxito o error
+                console.log('resp:', data);
+                alert(data.message);
+                 // Mostrar mensaje de éxito o error
                 // Actualizar la lista de préstamos pendientes después de aprobar o rechazar
                 location.reload();
             })
@@ -94,13 +99,24 @@
 
         // Función para rechazar un préstamo
         function rechazarPrestamo(idPrestamo) {
-            // Realizar una petición para rechazar el préstamo con el ID correspondiente
-            fetch('/rechazar-prestamo', {
+            const fechaEntrega = document.getElementById(`fechaEntrega_${idPrestamo}`).value;
+          
+          const fechaActual = obtenerFechaActual();
+            const userId = sessionStorage.getItem('userId');
+            // Realizar una petición para aprobar el préstamo con el ID correspondiente
+
+            fetch('/prestamo_rechazar', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ idPrestamo })
+                body: JSON.stringify({ 
+                    id_empleado_docente: userId, // Cambiar por el valor adecuado
+                    estado: 'rechazado', 
+                    fecha_entrega: fechaActual, 
+                    id_prestamo: idPrestamo 
+                })
+                
             })
             .then(response => response.json())
             .then(data => {
@@ -113,6 +129,38 @@
                 alert('Ocurrió un error al rechazar el préstamo');
             });
         }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Recuperar el ID de usuario almacenado en sessionStorage
+            const userType = sessionStorage.getItem('userType');
+            const userId = sessionStorage.getItem('userId');
+
+            console.log('userType:', userType);
+            console.log('userId:', userId);
+            if (userType == "administrador"){
+              //alert('Bienvenido Admin');
+             
+            }else{
+              alert('Será redireccionado, página autorizada sólo a Admin');
+              window.location.href="/login.html";
+            }
+      
+
+        });
+
+
+        // Función para obtener la fecha actual en el formato YYYY-MM-DD
+function obtenerFechaActual() {
+            const fechaActual = new Date();
+            const year = fechaActual.getFullYear();
+            const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+            const day = fechaActual.getDate().toString().padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+
+
     </script>
 </body>
 </html>

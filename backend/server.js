@@ -192,7 +192,7 @@ app.post('/login', (req, res) => {
     const { nombreUsuario, contraseña } = req.body;
     
     // Realiza la búsqueda del usuario en la base de datos
-    connection.query('SELECT u.nombre_usuario, ed.id_empleado_docente FROM usuario u JOIN empleado_docente ed ON u.id_usuario = ed.id_usuario WHERE u.nombre_usuario = ? AND u.contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
+    connection.query('SELECT u.nombre_usuario,u.tipo_usuario, ed.id_usuario FROM usuario u JOIN empleado_docente ed ON u.id_usuario = ed.id_usuario WHERE u.nombre_usuario = ? AND u.contraseña = ?', [nombreUsuario, contraseña], (error, results) => {
         if (error) {
             console.error('Error al buscar usuario:', error);
             res.status(500).send('Error interno del servidor');
@@ -206,9 +206,10 @@ app.post('/login', (req, res) => {
         }
 
         // Si se encuentra el usuario, envía el ID de usuario como respuesta
-        const userId = results[0].id_empleado_docente;
-        const userName = results[0].nombre_usuario
-        res.status(200).json({ userId: userId, userName: userName });
+        const userId = results[0].id_usuario;
+        const userName = results[0].nombre_usuario;
+        const userType = results[0].tipo_usuario;
+        res.status(200).json({ userId: userId, userName: userName , userType: userType });
     });
 });
 
@@ -226,9 +227,14 @@ app.post('/prestamos', (req, res) => {
     // Insertar el préstamo en la base de datos
     connection.query('INSERT INTO prestamo (id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, estado) VALUES (?, ?, ?, ?, ?)', [id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega, 'pendiente'], (error, results) => {
         if (error) {
-            res.status(500).send('Error interno del servidor');
-            throw error;
+            connection.rollback(function() {
+                res.status(500).send('Error interno del servidor');
+                throw error;
+            });
         }
+
+
+        
         // Registro en la tabla Transacción
         const id_prestamo = results.insertId;
         const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -236,8 +242,10 @@ app.post('/prestamos', (req, res) => {
         const detalles = 'Solicitud de préstamo';
         connection.query('INSERT INTO transaccion (id_préstamo, fecha_transaccion, tipo_transaccion, detalles) VALUES (?, ?, ?, ?)', [id_prestamo, fecha_transaccion, tipo_transaccion, detalles], (error, results) => {
             if (error) {
-                res.status(500).send('Error interno del servidor');
-                throw error;
+                connection.rollback(function() {
+                    res.status(500).send('Error interno del servidor');
+                    throw error;
+                });
             }
             res.status(201).send('Préstamo creado exitosamente');
         });
@@ -251,6 +259,55 @@ app.post('/prestamo_aprobar', (req, res) => {
 
     // Verificar si algún campo está vacío
     if (!id_empleado_docente || !estado || !fecha_entrega || !id_prestamo) {
+        res.status(400).json({ error: 'Todos los campos son requeridos, verifique la fecha ingresada' });
+
+        return;
+    }
+
+    // Insertar el préstamo en la base de datos
+    connection.query('update prestamo SET fecha_entrega=?,estado=?,aprobado_por=? where id_préstamo = ?', [fecha_entrega, estado, id_empleado_docente, id_prestamo], (error, results) => {
+        if (error) {
+            res.status(500).json({ error: 'Error interno del servidor' });
+
+            throw error;
+        }
+        // Registro en la tabla Transacción
+        //const id_prestamo = results.insertId;
+        const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        const tipo_transaccion = 'entrega';
+        const detalles = 'Aprobación de préstamo';
+        connection.query('INSERT INTO transaccion (id_préstamo, fecha_transaccion, tipo_transaccion, detalles) VALUES (?, ?, ?, ?)', [id_prestamo, fecha_transaccion, tipo_transaccion, detalles], (error, results) => {
+            if (error) {
+                connection.rollback(function() {
+                    res.status(500).json({ error: 'Error interno del servidor' });
+                    throw error;
+                });
+            }
+            const accion = 'aprobar préstamo';
+            const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            //const tipo_transaccion = 'entrega';
+            //const detalles = 'Rechazo de préstamo';
+            connection.query('INSERT INTO auditoria_administrativa (acción, id_préstamo, id_usuario, fecha_acción) VALUES (?, ?, ?, ?)', [accion, id_prestamo, id_empleado_docente, fecha_transaccion], (error, results) => {
+                if (error) {
+                    connection.rollback(function() {
+                        res.status(500).json({ error: 'Error interno del servidor' });
+                        throw error;
+                    });
+                }
+
+            res.status(201).json({ message: 'Préstamo aprobado exitosamente' });
+        });
+        });
+    });
+});
+
+
+// Aprobar un préstamo
+app.post('/prestamo_rechazar', (req, res) => {
+    const { id_empleado_docente, estado, fecha_entrega, id_prestamo } = req.body;
+
+    // Verificar si algún campo está vacío
+    if (!id_empleado_docente || !estado || !fecha_entrega || !id_prestamo) {
         res.status(400).send('Todos los campos son requeridos');
         return;
     }
@@ -258,25 +315,41 @@ app.post('/prestamo_aprobar', (req, res) => {
     // Insertar el préstamo en la base de datos
     connection.query('update prestamo SET fecha_entrega=?,estado=?,aprobado_por=? where id_préstamo = ?', [fecha_entrega, estado, id_empleado_docente, id_prestamo], (error, results) => {
         if (error) {
-            res.status(500).send('Error interno del servidor');
-            throw error;
+            connection.rollback(function() {
+                res.status(500).json({ error: 'Error interno del servidor' });
+                throw error;
+            });
         }
         // Registro en la tabla Transacción
-        const id_prestamo = results.insertId;
+        //const id_prestamo = results.insertId;
         const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        const tipo_transaccion = 'aprobado';
-        const detalles = 'Solicitud de préstamo';
+        const tipo_transaccion = 'entrega';
+        const detalles = 'Rechazo de préstamo';
         connection.query('INSERT INTO transaccion (id_préstamo, fecha_transaccion, tipo_transaccion, detalles) VALUES (?, ?, ?, ?)', [id_prestamo, fecha_transaccion, tipo_transaccion, detalles], (error, results) => {
             if (error) {
-                res.status(500).send('Error interno del servidor');
-                throw error;
+                connection.rollback(function() {
+                    res.status(500).json({ error: 'Error interno del servidor' });
+                    throw error;
+                });
             }
-            res.status(201).send('Préstamo creado exitosamente');
+            const accion = 'rechazo préstamo';
+            const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
+            //const tipo_transaccion = 'entrega';
+            //const detalles = 'Rechazo de préstamo';
+            connection.query('INSERT INTO auditoria_administrativa (acción, id_préstamo, id_usuario, fecha_acción) VALUES (?, ?, ?, ?)', [accion, id_prestamo, id_empleado_docente, fecha_transaccion], (error, results) => {
+                if (error) {
+                    connection.rollback(function() {
+                        res.status(500).json({ error: 'Error interno del servidor' });
+                        throw error;
+                    });
+                }
+                res.status(201).json({ message: 'Préstamo rechazado exitosamente' });
+        });
         });
     });
 });
 
-           
+
 
     
     // Consultar prestamos pendientes

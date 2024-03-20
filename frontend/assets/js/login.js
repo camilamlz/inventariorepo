@@ -37,12 +37,19 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
         }
     })
     .then(data => {
+        console.log('resp:', data);
         // Inicio de sesión exitoso, almacenar el ID de usuario en la sesión del navegador
         sessionStorage.setItem('userId', data.userId);
         sessionStorage.setItem('userName', data.userName);
-      
+        sessionStorage.setItem('userType',data.userType);
+
+       
         alert('Inicio de sesión exitoso');
-        window.location.href = '/prestamos.html'; // Redirigir al usuario a la página de préstamos
+       
+             window.location.href="dashboard.html";
+          
+     
+
     })
     .catch(error => {
         console.error('Error:', error);
