@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prestamos Pendientes</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4 mb-3">Préstamos Pendientes</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID Préstamo</th>
+                    <th>Empleado/Docente</th>
+                    <th>Equipo</th>
+                    <th>Fecha de Solicitud</th>
+                    <th>Fecha de Entrega</th>
+                    <th>Fecha de Retiro</th>
+                    <th>Dirección de Entrega</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="prestamosPendientesBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        // Realizar una petición para obtener los préstamos pendientes
+        fetch('/prestamos_pendientes')
+            .then(response => response.json())
+            .then(prestamos => {
+                // Una vez recibida la respuesta, mostrar los préstamos pendientes en la tabla
+                const prestamosPendientesBody = document.getElementById('prestamosPendientesBody');
+                console.log('Datos:', prestamos);
+                prestamos.forEach(prestamo => {
+                    // Crear una nueva fila para cada préstamo
+                    const row = document.createElement('tr');
+
+                    // Agregar las celdas con los datos del préstamo
+                    row.innerHTML = `
+                        <td>${prestamo.id_préstamo}</td>
+                        <td>${prestamo.nombre_empleado_docente}</td>
+                        <td>${prestamo.nombre_equipo}</td>
+                        <td>${prestamo.fecha_solicitud}</td>
+                        <td><input type="date" id="fechaEntrega_${prestamo.id_préstamo}" name="fechaEntrega" required></td>
+                        <td>${prestamo.fecha_retiro}</td>
+                        <td>${prestamo.dirección_entrega}</td>
+                        <td>${prestamo.estado}</td>
+                        <td>
+                            <button class="btn btn-success" onclick="aprobarPrestamo(${prestamo.id_préstamo})">Aprobar</button>
+                            <button class="btn btn-danger" onclick="rechazarPrestamo(${prestamo.id_préstamo})">Rechazar</button>
+                        </td>
+                    `;
+                    
+                    // Agregar la fila a la tabla
+                    prestamosPendientesBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error al obtener préstamos pendientes:', error);
+                alert('Ocurrió un error al obtener los préstamos pendientes');
+            });
+
+        // Función para aprobar un préstamo
+        function aprobarPrestamo(idPrestamo) {
+            const fechaEntrega = document.getElementById(`fechaEntrega_${idPrestamo}`).value;
+            // Realizar una petición para aprobar el préstamo con el ID correspondiente
+            fetch('/prestamo_aprobar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    id_empleado_docente: 1, // Cambiar por el valor adecuado
+                    estado: 'aprobado', 
+                    fecha_entrega: fechaEntrega, 
+                    id_prestamo: idPrestamo 
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Mostrar mensaje de éxito o error
+                // Actualizar la lista de préstamos pendientes después de aprobar o rechazar
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error al aprobar el préstamo:', error);
+                alert('Ocurrió un error al aprobar el préstamo');
+            });
+        }
+
+        // Función para rechazar un préstamo
+        function rechazarPrestamo(idPrestamo) {
+            // Realizar una petición para rechazar el préstamo con el ID correspondiente
+            fetch('/rechazar-prestamo', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ idPrestamo })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Mostrar mensaje de éxito o error
+                // Actualizar la lista de préstamos pendientes después de aprobar o rechazar
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error al rechazar el préstamo:', error);
+                alert('Ocurrió un error al rechazar el préstamo');
+            });
+        }
+    </script>
+</body>
+</html>

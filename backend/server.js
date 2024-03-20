@@ -246,20 +246,26 @@ app.post('/prestamos', (req, res) => {
 
 
 // Aprobar un préstamo
-app.post('/prestamosAprobar', (req, res) => {
-    const { id_empleado_docente, id_equipo, fecha_solicitud, dirección_entrega } = req.body;
+app.post('/prestamo_aprobar', (req, res) => {
+    const { id_empleado_docente, estado, fecha_entrega, id_prestamo } = req.body;
 
     // Verificar si algún campo está vacío
-    if (!id_empleado_docente || !id_equipo || !fecha_solicitud || !dirección_entrega) {
+    if (!id_empleado_docente || !estado || !fecha_entrega || !id_prestamo) {
         res.status(400).send('Todos los campos son requeridos');
         return;
     }
 
+    // Insertar el préstamo en la base de datos
+    connection.query('update prestamo SET fecha_entrega=?,estado=?,aprobado_por=? where id_préstamo = ?', [fecha_entrega, estado, id_empleado_docente, id_prestamo], (error, results) => {
+        if (error) {
+            res.status(500).send('Error interno del servidor');
+            throw error;
+        }
         // Registro en la tabla Transacción
         const id_prestamo = results.insertId;
         const fecha_transaccion = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        const tipo_transaccion = 'retiro';
-        const detalles = 'Aprobación de préstamo';
+        const tipo_transaccion = 'aprobado';
+        const detalles = 'Solicitud de préstamo';
         connection.query('INSERT INTO transaccion (id_préstamo, fecha_transaccion, tipo_transaccion, detalles) VALUES (?, ?, ?, ?)', [id_prestamo, fecha_transaccion, tipo_transaccion, detalles], (error, results) => {
             if (error) {
                 res.status(500).send('Error interno del servidor');
@@ -268,6 +274,26 @@ app.post('/prestamosAprobar', (req, res) => {
             res.status(201).send('Préstamo creado exitosamente');
         });
     });
+});
+
+           
+
+    
+    // Consultar prestamos pendientes
+app.get('/prestamos_pendientes', (req, res) => {
+    // Realizar una consulta a la base de datos para obtener todos los equipos
+    const query = 'SELECT p.id_préstamo, ed.nombre AS nombre_empleado_docente, et.nombre_equipo AS nombre_equipo,p.fecha_solicitud, p.fecha_entrega, p.fecha_retiro, p.dirección_entrega, p.estado, p.aprobado_por FROM prestamo p JOIN empleado_docente ed ON p.id_empleado_docente = ed.id_empleado_docente JOIN equipo_tecnologico et ON p.id_equipo = et.id_equipo WHERE p.estado = "pendiente";';
+    connection.query(query, (error, results) => {
+        if (error) {
+            console.error('Error al obtener equipos:', error);
+            res.status(500).json({ error: 'Ocurrió un error al obtener los equipos' });
+        } else {
+            // Enviar los resultados como respuesta
+            res.json(results);
+            
+        }
+    });
+});
 
 
     // Ruta para obtener todos los equipos
